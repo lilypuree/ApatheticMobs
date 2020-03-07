@@ -30,7 +30,7 @@ public class RevengeProvider implements ICapabilitySerializable<IntNBT> {
 
     @Override
     public IntNBT serializeNBT() {
-        return new IntNBT(innerCap.isVengeful() ? 1 : 0);
+        return IntNBT.valueOf(innerCap.isVengeful() ? 1 : 0);
     }
 
     @Override

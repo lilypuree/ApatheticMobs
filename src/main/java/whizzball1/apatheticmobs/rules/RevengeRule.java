@@ -2,6 +2,7 @@ package whizzball1.apatheticmobs.rules;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.VexEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import whizzball1.apatheticmobs.ApatheticMobs;
 import whizzball1.apatheticmobs.capability.IRevengeCap;
@@ -30,7 +31,8 @@ public class RevengeRule extends Rule {
         //ApatheticMobs.logger.info("Executing revenge rule!");
         LivingEntity elb = (LivingEntity) ent;
         IRevengeCap cap = elb.getCapability(ApatheticMobs.REVENGE_CAPABILITY, null).orElse(null);
-        if (elb.getRevengeTarget() != null) {
+        LivingEntity revengeTarget = elb.getRevengeTarget();
+        if (revengeTarget != null) {
             cap.setVengeful(true, elb);
             return false;
         } else if (cap.isVengeful()) {

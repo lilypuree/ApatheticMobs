@@ -24,8 +24,8 @@ public class DifficultyLockRule extends Rule {
         return 4;
     }
 
-    public boolean execute(Entity ent) {
-        return difficultyMatch(ent.getEntityWorld(), true);
+    public boolean execute(Entity entity) {
+        return difficultyMatch(entity.getEntityWorld(), true);
     }
 
     public Set<String> allowedModules() {

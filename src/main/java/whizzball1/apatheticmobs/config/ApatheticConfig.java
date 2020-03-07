@@ -152,7 +152,7 @@ public class ApatheticConfig {
 //    }
 
     @SubscribeEvent
-    public static void onReload(final ModConfig.ConfigReloading e) {
+    public static void onReload(final ModConfig.Reloading e) {
         DifficultyLockRule.allowedDifficulties.clear();
         ApatheticConfig.COMMON.difficulties.get().forEach(t -> DifficultyLockRule.allowedDifficulties.add(t));
 

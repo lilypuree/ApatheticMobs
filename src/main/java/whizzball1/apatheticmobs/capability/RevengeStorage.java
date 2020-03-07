@@ -2,6 +2,7 @@ package whizzball1.apatheticmobs.capability;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.IntArrayNBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -16,8 +17,8 @@ public class RevengeStorage implements Capability.IStorage<IRevengeCap> {
     @Override
     public INBT writeNBT(Capability<IRevengeCap> capability, IRevengeCap instance, Direction side) {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.put("venge", new IntNBT(instance.isVengeful()? 1 : 0));
-        nbt.put("timer", new IntNBT(instance.getTimer()));
+        nbt.put("venge", IntNBT.valueOf(instance.isVengeful()? 1 : 0));
+        nbt.put("timer", IntNBT.valueOf(instance.getTimer()));
         return nbt;
     }
 

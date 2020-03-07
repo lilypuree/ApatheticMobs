@@ -2,6 +2,7 @@ package whizzball1.apatheticmobs.handlers;
 
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.IPhase;
+import net.minecraft.entity.boss.dragon.phase.Phase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import whizzball1.apatheticmobs.ApatheticMobs;
 import whizzball1.apatheticmobs.config.ApatheticConfig;

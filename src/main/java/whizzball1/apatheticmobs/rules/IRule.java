@@ -15,5 +15,4 @@ public interface IRule {
     @Nullable
     public Set<String> allowedModules();
 
-
 }

@@ -1,20 +1,16 @@
 package whizzball1.apatheticmobs.handlers;
 
-import com.google.common.collect.Iterables;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.AbstractChunkProvider;
-import net.minecraft.world.server.ChunkHolder;
-import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.DifficultyChangeEvent;
@@ -23,10 +19,8 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.core.jmx.Server;
 import whizzball1.apatheticmobs.ApatheticMobs;
 import whizzball1.apatheticmobs.capability.IRevengeCap;
 import whizzball1.apatheticmobs.capability.RevengeProvider;
@@ -35,8 +29,6 @@ import whizzball1.apatheticmobs.data.WhitelistData;
 import whizzball1.apatheticmobs.rules.DifficultyLockRule;
 import whizzball1.apatheticmobs.rules.TargeterTypeRule;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 public class ApatheticHandler {
@@ -57,8 +49,9 @@ public class ApatheticHandler {
 
     @SubscribeEvent
     public void ignoreDamage(LivingDamageEvent e) {
-        if (!e.getEntityLiving().getEntityWorld().isRemote) {
-            if (e.getEntityLiving() instanceof PlayerEntity) {
+        LivingEntity livingEntity = e.getEntityLiving();
+        if (!livingEntity.getEntityWorld().isRemote) {
+            if (livingEntity instanceof PlayerEntity) {
                 if (e.getSource().getDamageType().equals("mob")) {
                     if (e.getSource().getTrueSource() instanceof SlimeEntity) {
                         e.setCanceled(true);
@@ -70,35 +63,35 @@ public class ApatheticHandler {
 
     @SubscribeEvent
     public void checkSpecialSpawns(LivingSpawnEvent.SpecialSpawn e) {
-        if (!e.getEntityLiving().getEntityWorld().isRemote) {
-            if (e.getEntityLiving() instanceof EnderDragonEntity) {
-                DragonHandler.createNewHandler((EnderDragonEntity) e.getEntityLiving());
+        LivingEntity livingEntity = e.getEntityLiving();
+        if (!livingEntity.getEntityWorld().isRemote) {
+            if (livingEntity instanceof EnderDragonEntity) {
+                DragonHandler.createNewHandler((EnderDragonEntity) livingEntity);
                 ApatheticMobs.logger.info("A dragon has spawned!");
-            } else if (e.getEntityLiving() instanceof WitherEntity) {
-                WitherHandler.createNewHandler((WitherEntity) e.getEntityLiving());
+            } else if (livingEntity instanceof WitherEntity) {
+                WitherHandler.createNewHandler((WitherEntity) livingEntity);
                 ApatheticMobs.logger.info("A wither has spawned!");
             }
         }
-
     }
 
     @SubscribeEvent
     public void checkSpawns(EntityJoinWorldEvent e) {
-        Entity ent = e.getEntity();
-        if (!ent.getEntityWorld().isRemote) if (ent instanceof MobEntity){
+        Entity entity = e.getEntity();
+        if (!entity.getEntityWorld().isRemote) if (entity instanceof MobEntity){
             if (!ApatheticConfig.COMMON.revenge.get()) {
-                //ApatheticMobs.logger.info(EntityList.getKey(ent) + "cancelling revenge");
-                ((MobEntity) ent).goalSelector.goals.removeIf(t->t.getGoal() instanceof HurtByTargetGoal);
-                //((EntityLiving) ent).tasks.executingTaskEntries.removeIf(t->t.action instanceof EntityAIHurtByTarget);
+                //ApatheticMobs.logger.info(EntityList.getKey(entity) + "cancelling revenge");
+                ((MobEntity) entity).goalSelector.goals.removeIf(t->t.getGoal() instanceof HurtByTargetGoal);
+                //((EntityLiving) entity).tasks.executingTaskEntries.removeIf(t->t.action instanceof EntityAIHurtByTarget);
             }
-            if (ent instanceof EnderDragonEntity) {
-                DragonHandler.createNewHandler((EnderDragonEntity)ent);
+            if (entity instanceof EnderDragonEntity) {
+                DragonHandler.createNewHandler((EnderDragonEntity)entity);
                 ApatheticMobs.logger.info("A dragon has spawned!");
-            } else if (ent instanceof WitherEntity) {
-                WitherHandler.createNewHandler((WitherEntity) ent);
+            } else if (entity instanceof WitherEntity) {
+                WitherHandler.createNewHandler((WitherEntity) entity);
                 ApatheticMobs.logger.info("A wither has spawned!");
             }
-            ResourceLocation key = ForgeRegistries.ENTITIES.getKey(ent.getType());
+            ResourceLocation key = ForgeRegistries.ENTITIES.getKey(entity.getType());
             if (key != null) {
                 if (!ApatheticConfig.COMMON.gaia.get()) {
                     if (key.equals(new ResourceLocation("botania", "magic_missile"))
@@ -138,12 +131,12 @@ public class ApatheticHandler {
 
     @SubscribeEvent
     public void entityDeath(LivingDeathEvent e) {
-        if (!e.getEntity().getEntityWorld().isRemote) {
-            Entity en = e.getEntity();
-            if (en instanceof EnderDragonEntity) {
-                DragonHandler.removeHandler((EnderDragonEntity)en);
-            } else if (en instanceof WitherEntity) {
-                WitherHandler.removeHandler((WitherEntity)en);
+        Entity entity = e.getEntity();
+        if (!entity.getEntityWorld().isRemote) {
+            if (entity instanceof EnderDragonEntity) {
+                DragonHandler.removeHandler((EnderDragonEntity)entity);
+            } else if (entity instanceof WitherEntity) {
+                WitherHandler.removeHandler((WitherEntity)entity);
             }
         }
 
@@ -266,8 +259,8 @@ public class ApatheticHandler {
     }
 
     @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent e) {
-        if (e.getModID().equals(ApatheticMobs.MOD_ID)) {
+    public void onConfigChanged(ModConfig.ModConfigEvent e) {
+        if (e.getConfig().getModId().equals(ApatheticMobs.MOD_ID)) {
             //ConfigManager.sync(ApatheticMobs.MOD_ID, Config.Type.INSTANCE);
 
             DifficultyLockRule.allowedDifficulties.clear();
