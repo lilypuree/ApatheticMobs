@@ -27,6 +27,7 @@ import whizzball1.apatheticmobs.capability.RevengeProvider;
 import whizzball1.apatheticmobs.config.ApatheticConfig;
 import whizzball1.apatheticmobs.data.WhitelistData;
 import whizzball1.apatheticmobs.rules.DifficultyLockRule;
+import whizzball1.apatheticmobs.rules.Rule;
 import whizzball1.apatheticmobs.rules.TargeterTypeRule;
 
 import java.util.UUID;
@@ -53,8 +54,15 @@ public class ApatheticHandler {
         if (!livingEntity.getEntityWorld().isRemote) {
             if (livingEntity instanceof PlayerEntity) {
                 if (e.getSource().getDamageType().equals("mob")) {
-                    if (e.getSource().getTrueSource() instanceof SlimeEntity) {
-                        e.setCanceled(true);
+                    Entity trueSource = e.getSource().getTrueSource();
+                    if (trueSource instanceof SlimeEntity) {
+                        for (Rule rule : ApatheticMobs.rules.defaultRules) {
+                            if (rule.shouldExecute(trueSource)) if (!rule.execute(trueSource)) {
+                                return;
+                            }else {
+                                e.setCanceled(true);
+                            }
+                        }
                     }
                 }
             }
